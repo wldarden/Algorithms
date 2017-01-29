@@ -1,0 +1,9 @@
+8
+4 A
+4 B
+5 X
+6 Dave
+7 random
+0 sun
+8 rain
+9 earth
