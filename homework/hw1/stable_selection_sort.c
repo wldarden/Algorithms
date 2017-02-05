@@ -4,9 +4,10 @@
 // 1/29/17
 //
 //
-//
-//
-//
+//Program assumes a formatted data source given from the command line (redirected or manual, doesn't matter).
+//  -The first line is the number of records that follow (so don't include this line in the total)
+//  -further lines are records in the form "int string"
+
 
 
 
@@ -28,10 +29,11 @@ void unstable_sort(struct record* d, int n_records);
 void swap_record(struct record* d, int lowest, int space);
 struct record* copy_records(struct record* src, struct record* dest, int n_records);
 void stable_sort(struct record* d, int n_records);
+void moveDown(struct record* d, int s, int e);
 
 int main(void)
 {
-  int n_records = 0;
+  int n_records = 0;//stores number of lines in data
   struct record* data;
   struct record* original_data;
   char buffer[BUF_SIZE];
@@ -49,7 +51,7 @@ int main(void)
   printf("Data sorted with UNSTABLE selection sort:\n");
   unstable_sort(original_data, n_records);
   print_data(original_data, n_records);
-  
+
   printf("A copy of the original data, sorted with STABLE selection sort:\n");
   stable_sort(data, n_records);
   print_data(data, n_records);
@@ -68,7 +70,6 @@ struct record* copy_records(struct record* src, struct record* dest,int n_record
 void unstable_sort(struct record* d, int n_records){
 
   int space, lowest, i; //indexes, left hand, right hand, current
-
   //find the lowest element for each space in array
     //for each element check if its the lowest element.
       //if it is save it as lowest element.
@@ -101,12 +102,23 @@ void stable_sort(struct record* d, int n_records){
         lowest = i;
       }
     }
-    if(lowest != space){// if the lowest element was changed, and the current space isnt the lowest it could be, swap them.
-      for(j = lowest; j > space; j--){
-        swap_record(d,j,j-1);
-      }
+    if(lowest != space){// if the lowest element was changed, and the current space isnt the lowest it could be, shift down.
+      moveDown(d,lowest,space);
     }
   }
+}
+
+//MOVE DOWN()
+//d = data, s = 'starting at' so starting at s and moving up, move elements in d down.
+//e = end at.
+void moveDown(struct record* d, int s, int e){
+  int i;
+  struct record temp;
+  temp = d[s];
+  for( i = s; i > e;i--){//swap i-1 with i.
+    d[i] = d[i-1];
+  }
+  d[e] = temp;
 }
 
 void swap_record(struct record* d, int lowest, int space){
