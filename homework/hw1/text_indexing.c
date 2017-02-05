@@ -8,6 +8,22 @@
 //Program assumes a formatted data source given from the command line (redirected or manual, doesn't matter).
 //  -The first line is the actual text data.
 //  -Further input lines are "searches"
+// compile:
+// gcc -o textidx text_indexing.c
+//
+// run with data from file data0.txt:
+// ./textidx < data0.txt
+//
+// run with data from file data1.txt:
+// ./textidx < data1.txt
+//
+// run with data from file data2.txt:
+// ./textidx < data2.txt
+//
+// run with user input:
+// ./textidx
+
+
 //some arbitray limits on input. change them here:
 #define MAX_DATA 10000
 #define MAX_WORD_LENGTH 100
@@ -136,7 +152,7 @@ int find_word(char* s, char* text, int* sorted_index, int n_words){
           sscanf(&text[sorted_index[maxi]], "%s", w2);
           cmp = mycomp(s,w2);
         }
-        // printf("%i, M:%i, m:%i, c:%i, s:%s, w2:%s, cmp:%i\n",searches,maxi,mini,curi,s,w2,cmp);
+        // printf("%i, M:%i, m:%i, c:%i, s:%s, w2:%s, cmp:%i 345\n",searches,maxi,mini,curi,s,w2,cmp);
         if(cmp == 0) {
           return searches;
         }
