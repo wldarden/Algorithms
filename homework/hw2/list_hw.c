@@ -360,6 +360,25 @@ void concatListsDestructive(list target, list source) {
  You should not change the behavior of any of the functions defined above.
  */
 void insertAtPosition(list A, Item P, int pos){
+  link prev, next;
+  //for fun, im going to make it so it inserts at the end if pos is bigger than A length, and at the beginning of the list if its < 0.
+  //Really though if they try to insert something at pos -1 or something, should it get added to the beginning?
+  //Why would someone call this function with a value less than 0? What would they want to happen?
+  if(pos > A->length+1){
+    printf("Error: Could not insert %i at position %i in list with %i elements.\nInserting at end of list (position %i) instead.\n",P,pos,A->length,A->length);
+    insertAtPosition(A,P,(A->length));
+  } else if(pos < 0){
+    printf("Error: Could not insert %i at position %i in list with %i elements.\nInserting at beginning of list (position 0) instead.\n",P,pos,A->length);
+    insertAtPosition(A,P,0);
+  } else {
+    if(pos != 0){//we are inserting in the middle or end of list.
+      prev = getLinkAtPos(pos-1, A);
+      next = prev->next;
+      insertLink(A,prev,newLink(P,next));
+    } else {
+      insertAtBeginning(A,newLink(P,NULL));
+    }
+  }
 	return;
 }
 
@@ -390,6 +409,31 @@ list sublist(list A, list pos_list) {
 }
 
 void moveAllMaxAtEnd(list A) {
+  link l, prev = NULL, last, tmp;
+  int max = 0, nmax = 1;
+  //find larget element:
+  for(l = getFirst(A); l != NULL; l = getLinkNext(l)){
+    if(max < getLinkItem(l)){
+      max = getLinkItem(l);
+    } else if( max == getLinkItem(l)){
+      nmax++;
+    }
+    last = l;
+  }
+  //move largest elements:
+  l = getFirst(A);
+  while(l != NULL && nmax > 0){//l shouldn't ever be NULL here but just in case.
+    if(getLinkItem(l) == max){
+      l = getLinkNext(l);
+      tmp = removeNext(A, prev);
+      insertLink(A,last, tmp);
+      last = tmp;
+      nmax--;
+    } else{
+      prev = l;
+      l = getLinkNext(l);
+    }
+  }
 	return;
 }
 
@@ -404,5 +448,9 @@ link getLinkAtPos(int n, list l){//Returns NULL if position doesn't exist
       i++;
     }
   }
+  if(i == n){
+    return k;
+  }
+  printf("Warning: Attempted to get element at position %i of list with %i elements!\n",n,l->length);
   return NULL;
 }
