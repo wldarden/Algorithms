@@ -184,7 +184,19 @@ link removeNext(list my_list, link x) {
         }
     } else {
         temp = x->next;
-        x->next = x->next->next;  // IS THIS CODE SAFE? JUSTIFY YOUR ANSWER. y u do dis.
+        // ORIGINAL CODE:
+        // x->next = x->next->next;  // IS THIS CODE SAFE? JUSTIFY YOUR ANSWER.
+        // /* no. theres no guarantee that x->next is a valid link. if x is the last link,
+        // * then x->next is NULL, and NULL->next will result in an error. To fix it, just
+        // * add in a check like the one above: if ( x->next != NULL ) { its ok to use x->next->next }
+        // * if x->next is null, they are trying to remove a link that doesn't exist in the first place.
+        // * So leave x->next as NULL and do nothing. (In the future maybe throw an error. Does C
+        // * have errors or is that just a c++ thing?)
+        // */
+        // MODIFIED SAFE CODE:
+        if(x->next != NULL){
+          x->next = x->next->next;
+        }
         my_list->length -= 1;
     }
     return temp;
@@ -352,6 +364,13 @@ void insertAtPosition(list A, Item P, int pos){
 }
 
 void deleteOccurrences(list A, Item V) {
+  link l, prev = NULL;
+  for(l = getFirst(A); l != NULL; l = getLinkNext(l)){
+    if(l->item == V){
+      free(removeNext(A,prev));
+    }
+    prev = l;
+  }
 	return;
 }
 
@@ -374,13 +393,16 @@ void moveAllMaxAtEnd(list A) {
 	return;
 }
 
-link getLinkAtPos(int n, list l){
+link getLinkAtPos(int n, list l){//Returns NULL if position doesn't exist
   link k;
   int i = 0;
-  for(k = getFirst(l); k != NULL; k = k->next){
-    if(i == n){
-      return k;
+  if(n < l->length){
+    for(k = getFirst(l); k != NULL; k = k->next){
+      if(i == n){
+        return k;
+      }
+      i++;
     }
-    i++;
   }
+  return NULL;
 }
