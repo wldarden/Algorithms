@@ -160,5 +160,6 @@ struct record* read_data(int n_records){
     token = strtok(NULL,del);
     strcpy(data[i].s, token);
   }
+  printf("During Load: D: %p, size: %lu\n",data, sizeof(data));
   return data;
 }
