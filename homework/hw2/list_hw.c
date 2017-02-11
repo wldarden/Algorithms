@@ -359,6 +359,26 @@ void concatListsDestructive(list target, list source) {
  If you need to use helper functions you can define them and use them in this file.
  You should not change the behavior of any of the functions defined above.
  */
+
+//HELPER FUNCTION. 
+ link getLinkAtPos(int n, list l){//Returns NULL if position doesn't exist
+   link k;
+   int i = 0;
+   if(n < l->length){
+     for(k = getFirst(l); k != NULL; k = k->next){
+       if(i == n){
+         return k;
+       }
+       i++;
+     }
+   }
+   if(i == n){
+     return k;
+   }
+   printf("Warning: Attempted to get element at position %i of list with %i elements!\n",n,l->length);
+   return NULL;
+ }
+
 void insertAtPosition(list A, Item P, int pos){
   link prev, next;
   //for fun, im going to make it so it inserts at the end if pos is bigger than A length, and at the beginning of the list if its < 0.
@@ -435,22 +455,4 @@ void moveAllMaxAtEnd(list A) {
     }
   }
 	return;
-}
-
-link getLinkAtPos(int n, list l){//Returns NULL if position doesn't exist
-  link k;
-  int i = 0;
-  if(n < l->length){
-    for(k = getFirst(l); k != NULL; k = k->next){
-      if(i == n){
-        return k;
-      }
-      i++;
-    }
-  }
-  if(i == n){
-    return k;
-  }
-  printf("Warning: Attempted to get element at position %i of list with %i elements!\n",n,l->length);
-  return NULL;
 }

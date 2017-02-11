@@ -103,9 +103,4 @@ list sublist(list A, list pos_list);
 
 void moveAllMaxAtEnd(list A);
 
-/*----------------------------------------------------------------
-Helper functions
- */
-link getLinkAtPos(int n, list l);//returns the nth link in l
-
 #endif	/* LIST_HW_H */
