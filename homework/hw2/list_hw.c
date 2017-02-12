@@ -158,11 +158,13 @@ void insertLink(list my_list, link previous, link new_link) {
     my_list->length += 1;
 }
 
+//InsertAtBeginning time complexity analysis
+// Big-Theta(4)
 /* Inserts new_link to the beginning of the list. */
 void insertAtBeginning(list my_list, link new_link) {
     setLinkNext(new_link, getFirst(my_list));  // replaces: new_link->next = my_list->first;
-    my_list->first = new_link;
-    my_list->length += 1;
+    my_list->first = new_link; // +1
+    my_list->length += 1; // +1
 }
 
 /* Removes from the list and returns the link coming AFTER link x.
@@ -360,17 +362,24 @@ void concatListsDestructive(list target, list source) {
  You should not change the behavior of any of the functions defined above.
  */
 
-//HELPER FUNCTION. 
+//HELPER FUNCTION.
+/*----------------------------------------------------------------
+getLinkAtPos time complexity analysis:
+this function loops through the data at most one time.
+N = length of list l
+BEST CASE:  1
+WORST CASE: N
+O(N)
+BIG-THETA(N)
+*/
  link getLinkAtPos(int n, list l){//Returns NULL if position doesn't exist
    link k;
    int i = 0;
-   if(n < l->length){
-     for(k = getFirst(l); k != NULL; k = k->next){
-       if(i == n){
-         return k;
-       }
-       i++;
+   for(k = getFirst(l); k != NULL; k = k->next){
+     if(i == n){
+       return k;
      }
+     i++;
    }
    if(i == n){
      return k;
@@ -379,6 +388,19 @@ void concatListsDestructive(list target, list source) {
    return NULL;
  }
 
+/*----------------------------------------------------------------
+insertAtPosition time complexity analysis:
+n = size of list A
+BEST CASE: CONSTANT,equal to insertAtBeginning+2, which is a constant time 6 for all n.
+  insertAtBeginning's time complexity = 4
+
+WORST CASE: LINEAR, BIG-THETA(n), we are inserting at the end of A.
+Big-Theta(n)
+
+WORST WORST CASE: input was invalid and larger than n, so we are inserting it at the end.
+in the worst worst case time goes up by a negligible constant for the print statement and pos updates
+
+*/
 void insertAtPosition(list A, Item P, int pos){
   link prev, next;
   //for fun, im going to make it so it inserts at the end if pos is bigger than A length, and at the beginning of the list if its < 0.
@@ -386,18 +408,17 @@ void insertAtPosition(list A, Item P, int pos){
   //Why would someone call this function with a value less than 0? What would they want to happen?
   if(pos > A->length+1){
     printf("Error: Could not insert %i at position %i in list with %i elements.\nInserting at end of list (position %i) instead.\n",P,pos,A->length,A->length);
-    insertAtPosition(A,P,(A->length));
+    pos = A->length;
   } else if(pos < 0){
     printf("Error: Could not insert %i at position %i in list with %i elements.\nInserting at beginning of list (position 0) instead.\n",P,pos,A->length);
-    insertAtPosition(A,P,0);
+    pos = 0;
+  }
+  if(pos != 0){//we are inserting in the middle or end of list.
+    prev = getLinkAtPos(pos-1, A);// <-getLinkAtPos is big theta(n)
+    next = prev->next;
+    insertLink(A,prev,newLink(P,next));// <-big theta(1)
   } else {
-    if(pos != 0){//we are inserting in the middle or end of list.
-      prev = getLinkAtPos(pos-1, A);
-      next = prev->next;
-      insertLink(A,prev,newLink(P,next));
-    } else {
-      insertAtBeginning(A,newLink(P,NULL));
-    }
+    insertAtBeginning(A,newLink(P,NULL));
   }
 	return;
 }
