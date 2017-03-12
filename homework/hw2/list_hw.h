@@ -91,7 +91,7 @@ void concatListsDestructive(list target, list source);
 
 
 /*----------------------------------------------------------------
- New functions that you will need to implement for HW3.
+ New functions that you will need to implement.
  DO not change their declaration or anything else in this file. declaration.
  */
 
@@ -102,5 +102,6 @@ void deleteOccurrences(list A, Item V);
 list sublist(list A, list pos_list);
 
 void moveAllMaxAtEnd(list A);
+
 
 #endif	/* LIST_HW_H */

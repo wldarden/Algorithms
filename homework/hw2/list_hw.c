@@ -403,76 +403,126 @@ in the worst worst case time goes up by a negligible constant for the print stat
 */
 void insertAtPosition(list A, Item P, int pos){
   link prev, next;
-  //for fun, im going to make it so it inserts at the end if pos is bigger than A length, and at the beginning of the list if its < 0.
-  //Really though if they try to insert something at pos -1 or something, should it get added to the beginning?
-  //Why would someone call this function with a value less than 0? What would they want to happen?
-  if(pos > A->length+1){
-    printf("Error: Could not insert %i at position %i in list with %i elements.\nInserting at end of list (position %i) instead.\n",P,pos,A->length,A->length);
-    pos = A->length;
-  } else if(pos < 0){
-    printf("Error: Could not insert %i at position %i in list with %i elements.\nInserting at beginning of list (position 0) instead.\n",P,pos,A->length);
-    pos = 0;
-  }
-  if(pos != 0){//we are inserting in the middle or end of list.
-    prev = getLinkAtPos(pos-1, A);// <-getLinkAtPos is big theta(n)
-    next = prev->next;
-    insertLink(A,prev,newLink(P,next));// <-big theta(1)
-  } else {
-    insertAtBeginning(A,newLink(P,NULL));
+  if(A != NULL){
+    //for fun, im going to make it so it inserts at the end if pos is bigger than A length, and at the beginning of the list if its < 0.
+    //Really though if they try to insert something at pos -1 or something, should it get added to the beginning?
+    //Why would someone call this function with a value less than 0? What would they want to happen?
+    if(pos > A->length+1){
+      printf("Error: Could not insert %i at position %i in list with %i elements.\nInserting at end of list (position %i) instead.\n",P,pos,A->length,A->length);
+      pos = A->length;
+    } else if(pos < 0){
+      printf("Error: Could not insert %i at position %i in list with %i elements.\nInserting at beginning of list (position 0) instead.\n",P,pos,A->length);
+      pos = 0;
+    }
+    if(pos != 0){//we are inserting in the middle or end of list.
+      prev = getLinkAtPos(pos-1, A);// <-getLinkAtPos is big theta(n)
+      next = prev->next;
+      insertLink(A,prev,newLink(P,next));// <-big theta(1)
+    } else {
+      insertAtBeginning(A,newLink(P,NULL));
+    }
   }
 	return;
 }
 
+/*----------------------------------------------------------------
+deleteOccurances time complexity analysis:
+n = size of list A
+big theta(n)
+We run through the data once, doing 5 operations everytime we find an occurance.
+so worst case its 5n run time and best case n.
+*/
 void deleteOccurrences(list A, Item V) {
   link l, prev = NULL;
-  for(l = getFirst(A); l != NULL; l = getLinkNext(l)){
+  if(A != NULL && A->length > 0){
+    l = getFirst(A);
     if(l->item == V){
-      free(removeNext(A,prev));
+      free(removeFirst(A));
+    } else {
+      prev = l;
     }
-    prev = l;
+    for(l = getLinkNext(l); l != NULL; l = getLinkNext(l)){
+      if(l->item == V){
+        free(removeNext(A,prev));
+      } else {
+        prev = l;
+      }
+    }
   }
 	return;
 }
-
+/*----------------------------------------------------------------
+sublist time complexity analysis:
+o = size of list pos_list
+n = size of list A
+big theta(n)
+We run through the pos_list once, // o
+and then run through list A possibly all the way to the end everytime. // n
+Then we create a link // 3
+and insert it at the end of A. // 4
+so o*n*3*4 = 12 * o * n = big theta n
+*/
 list sublist(list A, list pos_list) {
-  int i;
-  list sub = newList();
-  link pl, al, prev = NULL, new; //pl = position link; al = "A" link;prev = previous link added to sublist; new = temp storage for new link;
-
-  for(pl = getFirst(pos_list); pl != NULL; pl = getLinkNext(pl)){//if pos_list is empty, l will be null and we skip this
-    al = getLinkAtPos(pl->item, A);//pl->item is the integer position of desired element in a.
-    new = newLink(al->item,NULL);//is making a deep copy after the list is constructed more efficient than creating each link at time like this?
-    insertLink(sub,prev,new);//It would be slightly faster to implement this here instead of using insertLink because we know its always going to be the last link
-    prev = new;
+  if(A != NULL && pos_list != NULL && pos_list->length > 0){
+    int i;
+    list sub = newList();
+    link pl, al, prev = NULL, new; //pl = position link; al = "A" link;prev = previous link added to sublist; new = temp storage for new link;
+    int max = A->length;
+    for(pl = getFirst(pos_list); pl != NULL; pl = getLinkNext(pl)){//if pos_list is empty, l will be null and we skip this
+      if(pl->item < 0 || pl->item > max){
+        return NULL;
+      } else {
+        al = getLinkAtPos(pl->item, A);//pl->item is the integer position of desired element in a.
+        new = newLink(al->item,NULL);//is making a deep copy after the list is constructed more efficient than creating each link at time like this?
+        insertLink(sub,prev,new);//It would be slightly faster to implement this here instead of using insertLink because we know its always going to be the last link
+        prev = new;
+      }
+    }
+    return sub;
+  } else {
+    return NULL;
   }
-
-  return sub;
 }
 
+/*----------------------------------------------------------------
+moveAllMaxAtEnd time complexity analysis:
+n = size of list A
+big theta(n)
+We run through A to find the max element,worst case its an ascending list and have to change max every time, // 5n
+set l to first link // 1
+run through A again // n
+and move max elements to end, worst case they are all the max element, and we move everything to the end of the list and end up with the same list // 5
+so 5n + 5n + 1 = 10n + 1 = big theta (n)
+*/
 void moveAllMaxAtEnd(list A) {
   link l, prev = NULL, last, tmp;
   int max = 0, nmax = 1;
-  //find larget element:
-  for(l = getFirst(A); l != NULL; l = getLinkNext(l)){
-    if(max < getLinkItem(l)){
-      max = getLinkItem(l);
-    } else if( max == getLinkItem(l)){
-      nmax++;
+  if(A != NULL && A->length > 1){
+    //find larget element:
+    for(l = getFirst(A); l != NULL; l = getLinkNext(l)){
+      if(max < getLinkItem(l)){
+        max = getLinkItem(l);
+      } else if( max == getLinkItem(l)){
+        nmax++;
+      }
+      // if(nmax == 1){
+      //   prev = l;//saves pointer to element before first occurance of the largest element. We never need to change anything before this, so this basically cuts some constant less than n off the run time.
+      // }
+      last = l;
     }
-    last = l;
-  }
-  //move largest elements:
-  l = getFirst(A);
-  while(l != NULL && nmax > 0){//l shouldn't ever be NULL here but just in case.
-    if(getLinkItem(l) == max){
-      l = getLinkNext(l);
-      tmp = removeNext(A, prev);
-      insertLink(A,last, tmp);
-      last = tmp;
-      nmax--;
-    } else{
-      prev = l;
-      l = getLinkNext(l);
+    //move largest elements:
+    l = getFirst(A);
+    while(l != NULL && nmax > 0){//l shouldn't ever be NULL here but just in case.
+      if(getLinkItem(l) == max && l != last){
+        l = getLinkNext(l);
+        tmp = removeNext(A, prev);
+        insertLink(A,last, tmp);
+        last = tmp;
+        nmax--;
+      } else{
+        prev = l;
+        l = getLinkNext(l);
+      }
     }
   }
 	return;
